@@ -20,6 +20,8 @@ namespace lpr29
         Font chatFont = new Font("Segoe UI", 10);
         string userName;
         private StringBuilder chatLog = new StringBuilder();
+        Color chatTextColor = Color.Black;
+
 
 
         public Form1()
@@ -45,7 +47,7 @@ namespace lpr29
                 Task receiveTask = new Task(ReceiveMessages);
                 receiveTask.Start();
 
-                string message = userName + " вошел в чат";
+                string message = userName + " зайшов(ла) в чат";
                 byte[] data = Encoding.Unicode.GetBytes(message);
                 client.Send(data, data.Length, groupAddress.ToString(), remotePort);
 
@@ -113,7 +115,7 @@ namespace lpr29
 
         private void ExitChat()
         {
-            string message = userName + " покидает чат";
+            string message = userName + " покинув(ла) чат";
             byte[] data = Encoding.Unicode.GetBytes(message);
             client.Send(data, data.Length, groupAddress.ToString(), remotePort);
             client.DropMulticastGroup(groupAddress);
@@ -140,15 +142,19 @@ namespace lpr29
                 return;
             }
 
-            var settingsForm = new settings(groupAddress.ToString(), localPort, chatFont);
+            var settingsForm = new settings(groupAddress.ToString(), localPort, chatFont, chatTextColor);
             if (settingsForm.ShowDialog() == DialogResult.OK)
             {
                 groupAddress = IPAddress.Parse(settingsForm.Host);
                 localPort = settingsForm.Port;
                 remotePort = settingsForm.Port;
                 chatFont = settingsForm.SelectedFont;
+                chatTextColor = settingsForm.SelectedColor;
+
                 chatTextBox.Font = chatFont;
+                chatTextBox.ForeColor = chatTextColor;
             }
+
         }
 
         private void saveLogButton_Click(object sender, EventArgs e)
